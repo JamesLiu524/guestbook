@@ -4,11 +4,15 @@ from pathlib import Path
 
 from flask import (Flask, abort, g, redirect, render_template, request,
                    session, url_for)
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("config.py")
 app.config.update(SESSION_COOKIE_SAMESITE="Lax")
+
+limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
 
 DATABASE = Path(__file__).parent / "guestbook.db"
 
@@ -41,6 +45,11 @@ def init_db():
     db.close()
 
 
+@app.errorhandler(429)
+def too_many_requests(e):
+    return render_template("429.html"), 429
+
+
 @app.route("/")
 def index():
     messages = get_db().execute(
@@ -50,6 +59,7 @@ def index():
 
 
 @app.route("/post", methods=["POST"])
+@limiter.limit("5 per minute; 30 per day")
 def post():
     name = request.form.get("name", "").strip()[:20]
     content = request.form.get("content", "").strip()[:500]
@@ -66,6 +76,7 @@ def post():
 
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute; 20 per hour", methods=["POST"])
 def login():
     error = None
     if request.method == "POST":

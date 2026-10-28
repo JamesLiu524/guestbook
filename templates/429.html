@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block title %}操作太频繁{% endblock %}
+
+{% block content %}
+  <h1>慢一点 🐢</h1>
+  <p>你的操作太频繁了，请稍后再试。</p>
+  <p><a href="{{ url_for('index') }}">← 返回留言板</a></p>
+{% endblock %}
