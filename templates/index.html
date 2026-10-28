@@ -1,47 +1,18 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>James 的留言板</title>
-  <style>
-    body {
-      font-family: system-ui, "Microsoft YaHei", sans-serif;
-      max-width: 640px;
-      margin: 60px auto;
-      padding: 0 16px;
-      line-height: 1.7;
-      color: #333;
-    }
-    h1 { color: #d62828; }
-    form { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
-    input, textarea {
-      font: inherit;
-      padding: 8px 12px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-    textarea { min-height: 100px; resize: vertical; }
-    button {
-      font: inherit;
-      padding: 8px;
-      border: none;
-      border-radius: 8px;
-      background: #d62828;
-      color: white;
-      cursor: pointer;
-    }
-    .msg { border-bottom: 1px solid #eee; padding: 12px 0; }
-    .meta { font-size: 14px; color: #888; }
-    .meta strong { color: #333; }
-    .content { margin: 4px 0 0; white-space: pre-wrap; }
-    .empty { color: #888; }
-  </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block content %}
+  {% if session.admin %}
+    <div class="admin-bar">
+      <span>🔑 管理员模式</span>
+      <form action="{{ url_for('logout') }}" method="post" class="inline">
+        <button class="small gray">退出登录</button>
+      </form>
+    </div>
+  {% endif %}
+
   <h1>留言板 ✍️</h1>
 
-  <form action="/post" method="post">
+  <form action="{{ url_for('post') }}" method="post" class="stack">
     <input name="name" placeholder="你的名字" maxlength="20" required>
     <textarea name="content" placeholder="想说点什么？" maxlength="500" required></textarea>
     <button type="submit">提交留言</button>
@@ -49,11 +20,18 @@
 
   {% for m in messages %}
     <div class="msg">
-      <div class="meta"><strong>{{ m.name }}</strong> · {{ m.created_at }}</div>
+      <div class="meta">
+        <span><strong>{{ m.name }}</strong> · {{ m.created_at }}</span>
+        {% if session.admin %}
+          <form action="{{ url_for('delete', message_id=m.id) }}" method="post" class="inline"
+                onsubmit="return confirm('确定删除这条留言吗？')">
+            <button class="small">删除</button>
+          </form>
+        {% endif %}
+      </div>
       <p class="content">{{ m.content }}</p>
     </div>
   {% else %}
     <p class="empty">还没有留言，来做第一个吧！</p>
   {% endfor %}
-</body>
-</html>
+{% endblock %}

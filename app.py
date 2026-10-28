@@ -2,9 +2,13 @@ import sqlite3
 from datetime import datetime
 from pathlib import Path
 
-from flask import Flask, g, redirect, render_template, request, url_for
+from flask import (Flask, abort, g, redirect, render_template, request,
+                   session, url_for)
+from werkzeug.security import check_password_hash
 
-app = Flask(__name__)
+app = Flask(__name__, instance_relative_config=True)
+app.config.from_pyfile("config.py")
+app.config.update(SESSION_COOKIE_SAMESITE="Lax")
 
 DATABASE = Path(__file__).parent / "guestbook.db"
 
@@ -40,7 +44,7 @@ def init_db():
 @app.route("/")
 def index():
     messages = get_db().execute(
-        "SELECT name, content, created_at FROM messages ORDER BY id DESC"
+        "SELECT id, name, content, created_at FROM messages ORDER BY id DESC"
     ).fetchall()
     return render_template("index.html", messages=messages)
 
@@ -58,6 +62,35 @@ def post():
         )
         db.commit()
 
+    return redirect(url_for("index"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+    if request.method == "POST":
+        password = request.form.get("password", "")
+        if check_password_hash(app.config["ADMIN_PASSWORD_HASH"], password):
+            session.clear()
+            session["admin"] = True
+            return redirect(url_for("index"))
+        error = "密码错误"
+    return render_template("login.html", error=error)
+
+
+@app.route("/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return redirect(url_for("index"))
+
+
+@app.route("/delete/<int:message_id>", methods=["POST"])
+def delete(message_id):
+    if not session.get("admin"):
+        abort(403)
+    db = get_db()
+    db.execute("DELETE FROM messages WHERE id = ?", (message_id,))
+    db.commit()
     return redirect(url_for("index"))
 
 

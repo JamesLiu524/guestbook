@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}James 的留言板{% endblock %}</title>
+  <style>
+    body {
+      font-family: system-ui, "Microsoft YaHei", sans-serif;
+      max-width: 640px;
+      margin: 60px auto;
+      padding: 0 16px;
+      line-height: 1.7;
+      color: #333;
+    }
+    h1 { color: #d62828; }
+    form.stack { display: flex; flex-direction: column; gap: 10px; margin-bottom: 40px; }
+    input, textarea {
+      font: inherit;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+    textarea { min-height: 100px; resize: vertical; }
+    button {
+      font: inherit;
+      padding: 8px;
+      border: none;
+      border-radius: 8px;
+      background: #d62828;
+      color: white;
+      cursor: pointer;
+    }
+    .msg { border-bottom: 1px solid #eee; padding: 12px 0; }
+    .meta { font-size: 14px; color: #888; display: flex; align-items: center; gap: 8px; }
+    .meta strong { color: #333; }
+    .content { margin: 4px 0 0; white-space: pre-wrap; }
+    .empty { color: #888; }
+    .admin-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      background: #fff4e5; padding: 8px 12px; border-radius: 8px; margin-bottom: 24px;
+    }
+    .inline { display: inline; margin: 0; }
+    .small { padding: 2px 10px; font-size: 13px; }
+    .gray { background: #888; }
+    .error { color: #d62828; }
+  </style>
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>
