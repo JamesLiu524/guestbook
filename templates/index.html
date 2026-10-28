@@ -49,7 +49,7 @@
 
   {% for m in messages %}
     <div class="msg">
-      <div class="meta"><strong>{{ m.name }}</strong> · {{ m.time }}</div>
+      <div class="meta"><strong>{{ m.name }}</strong> · {{ m.created_at }}</div>
       <p class="content">{{ m.content }}</p>
     </div>
   {% else %}
