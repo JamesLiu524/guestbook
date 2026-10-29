@@ -7,10 +7,12 @@ from flask import (Flask, abort, g, redirect, render_template, request,
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__, instance_relative_config=True)
 app.config.from_pyfile("config.py")
 app.config.update(SESSION_COOKIE_SAMESITE="Lax")
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)
 
 limiter = Limiter(get_remote_address, app=app, storage_uri="memory://")
 
@@ -105,6 +107,7 @@ def delete(message_id):
     return redirect(url_for("index"))
 
 
+init_db()
+
 if __name__ == "__main__":
-    init_db()
     app.run(debug=True)
