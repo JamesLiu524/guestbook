@@ -6,6 +6,7 @@
   <title>{% block title %}James 的留言板{% endblock %}</title>
   <style>
     body {
+      background: #fbfaf7;
       font-family: system-ui, "Microsoft YaHei", sans-serif;
       max-width: 640px;
       margin: 60px auto;
@@ -44,9 +45,31 @@
     .small { padding: 2px 10px; font-size: 13px; }
     .gray { background: #888; }
     .error { color: #d62828; }
+    .site-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 32px;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+    }
+    .site-nav a { color: #555; text-decoration: none; }
+    .site-nav .brand { color: #d62828; font-weight: 600; }
+    .site-nav .links { display: flex; gap: 16px; }
+    .site-nav .links a:hover { color: #d62828; }
+    .site-nav .links a.active { color: #d62828; font-weight: 600; }
   </style>
 </head>
 <body>
+    <nav class="site-nav">
+    <a class="brand" href="https://kiteroot.com">🪁 kiteroot</a>
+    <div class="links">
+      <a href="https://kiteroot.com">主页</a>
+      <a href="https://blog.kiteroot.com">博客</a>
+      <a href="https://guestbook.kiteroot.com" class="active">留言板</a>
+    </div>
+  </nav>
   {% block content %}{% endblock %}
 </body>
 </html>
